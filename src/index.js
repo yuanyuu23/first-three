@@ -6,20 +6,40 @@ import sphere from './mesh/sphere';
 import plane from './mesh/plane';
 import sprite from './sprite/sprite';
 import points from './points/points';
+//import line from './mesh/line';
+import curve from './mesh/curve';
+import line from './line/splineCurve';
+//import plane from './demo/mountain';
+import curveObject from './line/QuadraticBezierCurve';
+import geometry from'./mesh/buffer';
+import lathe from'./mesh/lathe';
+import tube from'./mesh/tube';
+import tunnel, { tubePoints } from'./demo/tunnel';
+import geometryshape from'./mesh/shape';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
 
 let renderer, camera, scene,ambientLight; // 全局变量 场景、相机、渲染器
 function init() {
    // Create a scene
   scene = new THREE.Scene();
   // console.log('cube', cube);
-  // // Add the cube to the scene
-   //scene.add(cube);
-  // // // Add the sphere to the scene
-  scene.add(sphere);
+  //Add the cube to the scene
+  //scene.add(cube);
+  //Add the sphere to the scene
+  //scene.add(sphere);
+  //scene.add(line)
+  //scene.add(curveObject);
+  //scene.add(curve);
+  //scene.add(planeMesh);
   //scene.add(plane);
   //scene.add(sprite);
   //scene.add(points);
+  //scene.add(geometry);
+  //scene.add(lathe);
+   //scene.add(tube);
+   //scene.add(geometryshape);
+   scene.add(tunnel);
 
 
 
@@ -45,7 +65,8 @@ scene.add(directionalLight);
   // Create a renderer
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0xffffff, 1); // 设置背景色为白色
+  //renderer.setClearColor(0xffffff, 1); // 设置背景色为白色
+  renderer.setClearColor(0x000000 , 1); // 设置背景色为白色
   renderer.render(scene, camera);
   // Add the canvas element created by the renderer to document body
   // domElement(canvas)
@@ -79,18 +100,34 @@ function initHelper(params) {
     renderer.render(scene, camera); //执行渲染操作
   }); //监听鼠标、键盘事件
 
-  // 添加一个辅助网格地面 网格地面辅助观察GridHelper
-  const gridHelper = new THREE.GridHelper(300, 300, 0x004444, 0x004444);
-  scene.add(gridHelper);
+  // // 添加一个辅助网格地面 网格地面辅助观察GridHelper
+  // const gridHelper = new THREE.GridHelper(300, 300, 0x004444, 0x004444);
+  // scene.add(gridHelper);
 }
 
+let i = 0;
 function animate() {
-  requestAnimationFrame(animate);
+  if(i<tubePoints.length - 50){
+    const point = tubePoints[i];
+    camera.position.copy(point);
+    const nextPoint = tubePoints[i+1];
+    camera.lookAt(nextPoint);
+    i += 1; // 自动前进
+  }else{
+    i = 0;
+  }
   renderer.render(scene, camera);
+  requestAnimationFrame(animate);
   // 立方体旋转
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
+  // cube.rotation.x += 0.01;
+  // cube.rotation.y += 0.01;
 }
+
+document.addEventListener('keydown',e =>{
+  if(e.code === 'ArrowDown'){
+    i +=10;
+  }
+});
 // 停止动画
 function stopA() {
   cube.rotation.x = 0;
@@ -123,80 +160,80 @@ animate();
 stopA();
 
 
-const gui = new GUI();
-// 改变对象的属性
-const obj = {
-  x: 30
-}
+// const gui = new GUI();
+// // 改变对象的属性
+// const obj = {
+//   x: 30
+// }
 
-// 物体
-const folder1 = gui.addFolder('物体');
-//立方体
-const folder2 = folder1.addFolder('立方体');
-folder2.add(cube.position,'x',-60,60).name('立方体x坐标');
-folder2.add(cube.position,'y',-60,60).name('立方体y坐标');
-folder2.add(cube.position,'z',-60,60).name('立方体z坐标');
+// // 物体
+// const folder1 = gui.addFolder('物体');
+// //立方体
+// const folder2 = folder1.addFolder('立方体');
+// folder2.add(cube.position,'x',-60,60).name('立方体x坐标');
+// folder2.add(cube.position,'y',-60,60).name('立方体y坐标');
+// folder2.add(cube.position,'z',-60,60).name('立方体z坐标');
 
-//材质
-const folder3 = folder1.addFolder('材质');
-//颜色
-const folder4 = folder3.addFolder('颜色');
-folder4.addColor(cube.material, 'color').name('立方体颜色');
-folder4.addColor(sphere.material, 'color').name('球体颜色');
-//透明度
-const folder5 = folder3.addFolder('透明度');
-folder5.add(cube.material, 'transparent').name('立方体是否透明');
-folder5.add(sphere.material, 'transparent').name('球体是否透明').onChange((value) => {
-    sphere.material.opacity = value ? 0.5 : 1.0;
-  });
-folder5.add(cube.material, 'opacity', 0, 1).name('立方体透明度');
-folder5.add(sphere.material, 'opacity', 0, 1).name('球体透明度');
-//高光（镜面反射）
-const folder6 = folder3.addFolder('高光');
-folder6.add(cube.material, 'shininess', 0, 100).name('立方体高光');
-folder6.add(sphere.material, 'shininess', 0, 100).name('球体高光');
+// //材质
+// const folder3 = folder1.addFolder('材质');
+// //颜色
+// const folder4 = folder3.addFolder('颜色');
+// folder4.addColor(cube.material, 'color').name('立方体颜色');
+// folder4.addColor(sphere.material, 'color').name('球体颜色');
+// //透明度
+// const folder5 = folder3.addFolder('透明度');
+// folder5.add(cube.material, 'transparent').name('立方体是否透明');
+// folder5.add(sphere.material, 'transparent').name('球体是否透明').onChange((value) => {
+//     sphere.material.opacity = value ? 0.5 : 1.0;
+//   });
+// folder5.add(cube.material, 'opacity', 0, 1).name('立方体透明度');
+// folder5.add(sphere.material, 'opacity', 0, 1).name('球体透明度');
+// //高光（镜面反射）
+// const folder6 = folder3.addFolder('高光');
+// folder6.add(cube.material, 'shininess', 0, 100).name('立方体高光');
+// folder6.add(sphere.material, 'shininess', 0, 100).name('球体高光');
 
-//光源
-const folder7 = gui.addFolder('光源');
-const folder8 = folder7.addFolder('环境光');
-folder8.addColor(ambientLight, 'color').name('颜色');
-folder8.add(ambientLight, 'intensity', 0, 2).name('强度').step(0.1).onChange((value) => {
-  console.log(value);
-});
-//点光源
-const pointLight = new THREE.PointLight(0xffffff, 1);
-pointLight.position.set(50, 50, 50);
-scene.add(pointLight);
-const folder9 = folder7.addFolder('点光源');
-folder9.addColor(pointLight, 'color').name('颜色');
-folder9.add(pointLight, 'intensity', 0, 2).name('强度');
-
-// 点光源位置
-const folderPosition = folder9.addFolder('位置');
-folderPosition.add(pointLight.position, 'x', -100, 100).name('x 坐标');
-folderPosition.add(pointLight.position, 'y', -100, 100).name('y 坐标');
-folderPosition.add(pointLight.position, 'z', -100, 100).name('z 坐标');
-
-// 执行方法
-const settings = {
-  clear() {
-      folder1.children[1].reset(); // 重置
-   },
-   setDefault() {
-
-   }
-};
-folder1.add(settings, 'clear');
-folder1.add(settings, 'setDefault'); // 重置到默认值
-
-
-// // 下拉菜单、单选框
-// gui.add(cube.position, 'x', [0, 1, 2, 4,8]);
-// gui.add(cube.position, 'x', {
-//   min: -10,
-//   max: 10,
+// //光源
+// const folder7 = gui.addFolder('光源');
+// const folder8 = folder7.addFolder('环境光');
+// folder8.addColor(ambientLight, 'color').name('颜色');
+// folder8.add(ambientLight, 'intensity', 0, 2).name('强度').step(0.1).onChange((value) => {
+//   console.log(value);
 // });
+// //点光源
+// const pointLight = new THREE.PointLight(0xffffff, 1);
+// pointLight.position.set(50, 50, 50);
+// scene.add(pointLight);
+// const folder9 = folder7.addFolder('点光源');
+// folder9.addColor(pointLight, 'color').name('颜色');
+// folder9.add(pointLight, 'intensity', 0, 2).name('强度');
 
-// 关闭打开菜单
-gui.close()
-gui.open()
+// // 点光源位置
+// const folderPosition = folder9.addFolder('位置');
+// folderPosition.add(pointLight.position, 'x', -100, 100).name('x 坐标');
+// folderPosition.add(pointLight.position, 'y', -100, 100).name('y 坐标');
+// folderPosition.add(pointLight.position, 'z', -100, 100).name('z 坐标');
+
+// // 执行方法
+// const settings = {
+//   clear() {
+//       folder1.children[1].reset(); // 重置
+//    },
+//    setDefault() {
+
+//    }
+// };
+// folder1.add(settings, 'clear');
+// folder1.add(settings, 'setDefault'); // 重置到默认值
+
+
+// // // 下拉菜单、单选框
+// // gui.add(cube.position, 'x', [0, 1, 2, 4,8]);
+// // gui.add(cube.position, 'x', {
+// //   min: -10,
+// //   max: 10,
+// // });
+
+// // 关闭打开菜单
+// gui.close()
+// gui.open()

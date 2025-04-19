@@ -15,6 +15,7 @@ const material = new THREE.MeshPhongMaterial({
   // roughness: 0.2,  
   //map:texture,
   envMap:textureCube,
+  wireframe:true,
 });
 
 // const material = new THREE.MeshPhongMaterial({map:texture,});

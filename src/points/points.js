@@ -7,3 +7,4 @@ const pointsMaterial = new THREE.PointsMaterial({ color: 0xffffff });
 // 创建Points粒子系统
 const points = new THREE.Points(geometry, pointsMaterial);
 export default points; 
+
